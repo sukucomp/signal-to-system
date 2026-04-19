@@ -34,13 +34,13 @@ pip install pyserial
 Run the listener:
 
 ```powershell
-python -u rfid_serial_ingestor.py --port COM3 --baud 9600
+python -u C:\path\to\rfid_serial_ingestor.py --port COM3 --baud 9600
 ```
 
 Optional:
 
 ```powershell
-python -u rfid_serial_ingestor.py --port COM3 --baud 9600 --quiet-non-events
+python -u C:\path\to\rfid_serial_ingestor.py --port COM3 --baud 9600 --quiet-non-events
 ```
 
 ## Notes

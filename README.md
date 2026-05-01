@@ -5,7 +5,7 @@ A collection of engineering notes exploring the intersection of physical systems
 
 | # | Title | LinkedIn | Code |
 |---|-------|----------|------|
-| 1 | Where Software Meets Physics: Why I'm Exploring RFID | [Post]([https://www.linkedin.com/...](https://www.linkedin.com/pulse/where-software-meets-physics-why-im-exploring-rfid-balasubramaniam-0mitc/) | (no code) |
+| 1 | Where Software Meets Physics: Why I'm Exploring RFID | https://www.linkedin.com/...](https://www.linkedin.com/pulse/where-software-meets-physics-why-im-exploring-rfid-balasubramaniam-0mitc/ | (no code) |
 | 2 | Conversation with an RF Engineer | [Post]([https://www.linkedin.com/...](https://www.linkedin.com/posts/sureshkbalasubramaniam_signal-to-system-2-had-a-meaningful-catch-up-activity-7444809434901487616-h6LI) | (no code) |
 | 3 | RFID Deep-Dive: When the Student Is Ready | [Post]([https://www.linkedin.com/...](https://www.linkedin.com/posts/sureshkbalasubramaniam_rfid-lifelonglearning-engineering-activity-7448327381938888704-sfkE)) | (no code) |
 | 4 | Why Your RFID Tag Isn't 'Instant' | [Post]([https://www.linkedin.com/...](https://www.linkedin.com/pulse/why-your-rfid-tag-isnt-instant-quick-look-physics-balasubramaniam-i18kc) | (no code) |

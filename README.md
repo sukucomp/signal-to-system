@@ -1,2 +1,21 @@
 # signal-to-system
 A collection of engineering notes exploring the intersection of physical systems and modern IT platforms. Covers RFID, edge systems, Kubernetes, and cloud infrastructure, with a focus on real-world deployment, reliability, and system integration across device-to-cloud architectures
+
+## Posts
+
+| # | Title | LinkedIn | Code |
+|---|-------|----------|------|
+| 1 | Where Software Meets Physics: Why I'm Exploring RFID | [Post]([https://www.linkedin.com/...](https://www.linkedin.com/pulse/where-software-meets-physics-why-im-exploring-rfid-balasubramaniam-0mitc/) | (no code) |
+| 2 | Conversation with an RF Engineer | [Post]([https://www.linkedin.com/...](https://www.linkedin.com/posts/sureshkbalasubramaniam_signal-to-system-2-had-a-meaningful-catch-up-activity-7444809434901487616-h6LI) | (no code) |
+| 3 | RFID Deep-Dive: When the Student Is Ready | [Post]([https://www.linkedin.com/...](https://www.linkedin.com/posts/sureshkbalasubramaniam_rfid-lifelonglearning-engineering-activity-7448327381938888704-sfkE)) | (no code) |
+| 4 | Why Your RFID Tag Isn't 'Instant' | [Post]([https://www.linkedin.com/...](https://www.linkedin.com/pulse/why-your-rfid-tag-isnt-instant-quick-look-physics-balasubramaniam-i18kc) | (no code) |
+| 5 | RFID to Windows USB Port (Python) | [Post]([https://www.linkedin.com/...](https://www.linkedin.com/pulse/rfid-windows-usb-port-comx-suresh-balasubramaniam-gmssc)) | [`01-serial-ingestor-python/`](./01-serial-ingestor-python) |
+| 6 | From Prototype to Production: Python vs C# | [Post]([https://www.linkedin.com/...](https://www.linkedin.com/pulse/from-prototype-production-python-vs-c-rfid-serial-balasubramaniam-haayc) | [`02-serial-ingestor-csharp/`](./02-serial-ingestor-csharp) |
+| 7 | Fleet-Ready Event Schema | _(coming)_ | [`03-fleet-ready-schema/`](./03-fleet-ready-schema) |
+
+## About
+
+Built by Suresh Balasubramaniam — Systems & Solutions Engineer
+exploring the intersection of Electrical Engineering and modern IT
+platforms. Each folder corresponds to one published post; the post
+provides the narrative, the folder provides the working code.

@@ -3,6 +3,24 @@ using System.IO.Ports;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
+// =====================================================================
+// RFID serial ingestor (C# / .NET).
+//
+// Mirrors the Python ingestor: reads EVENT:{...} lines from a serial port
+// and parses the fleet-ready schema:
+//
+//   {
+//     "event_id":     "<uuid>",
+//     "device_id":    "reader-NN",
+//     "uid":          "AA BB CC DD",
+//     "valid":        true | false,
+//     "ts_device_ms": <int>
+//   }
+//
+// The host adds ReceivedAtUtc on ingestion. Downstream stages will add
+// further timestamps on subsequent hops.
+// =====================================================================
+
 class Program
 {
     private const string EVENT_PREFIX = "EVENT:";
@@ -46,7 +64,7 @@ class Program
                     }
                     catch (TimeoutException)
                     {
-                        // Ignore timeout (same as Python continue)
+                        // Ignore timeout (matches Python continue behaviour).
                     }
                     catch (JsonException ex)
                     {
@@ -74,39 +92,67 @@ class Program
 
         var data = JsonSerializer.Deserialize<RfidPayload>(payload);
 
-        if (data == null || data.Uid == null)
-            throw new Exception("Invalid payload");
+        if (data == null)
+            throw new Exception("Empty payload");
+
+        // Hard-required fields. Missing these is a malformed event.
+        if (data.Uid == null)
+            throw new Exception("Missing required field: uid");
+
+        // Soft-required: if the device is pre-schema, fill in host-side
+        // defaults so downstream stages still get a usable event. Mirrors
+        // the fallback behaviour in the Python ingestor.
+        string eventId = data.EventId ?? Guid.NewGuid().ToString();
+        string deviceId = data.DeviceId ?? "unknown";
 
         return new RfidEvent
         {
+            EventId = eventId,
+            DeviceId = deviceId,
             Uid = data.Uid,
             Valid = data.Valid,
-            TimeUtc = DateTime.UtcNow
+            TsDeviceMs = data.TsDeviceMs,
+            ReceivedAtUtc = DateTime.UtcNow
         };
     }
 
     static void PrintEvent(RfidEvent ev)
     {
         Console.WriteLine("PARSED EVENT:");
-        Console.WriteLine($"UID   : {ev.Uid}");
-        Console.WriteLine($"Valid : {ev.Valid}");
-        Console.WriteLine($"Time  : {ev.TimeUtc:o}");
+        Console.WriteLine($"  Event ID    : {ev.EventId}");
+        Console.WriteLine($"  Device ID   : {ev.DeviceId}");
+        Console.WriteLine($"  UID         : {ev.Uid}");
+        Console.WriteLine($"  Valid       : {ev.Valid}");
+        Console.WriteLine($"  Device ms   : {ev.TsDeviceMs}");
+        Console.WriteLine($"  Received at : {ev.ReceivedAtUtc:o}");
         Console.WriteLine();
     }
 }
 
 class RfidPayload
 {
+    [JsonPropertyName("event_id")]
+    public string? EventId { get; set; }
+
+    [JsonPropertyName("device_id")]
+    public string? DeviceId { get; set; }
+
     [JsonPropertyName("uid")]
     public string? Uid { get; set; }
 
     [JsonPropertyName("valid")]
     public bool Valid { get; set; }
+
+    [JsonPropertyName("ts_device_ms")]
+    public long TsDeviceMs { get; set; }
 }
 
 class RfidEvent
 {
+    public string? EventId { get; set; }
+    public string? DeviceId { get; set; }
     public string? Uid { get; set; }
     public bool Valid { get; set; }
-    public DateTime TimeUtc { get; set; }
+    public long TsDeviceMs { get; set; }
+    public DateTime ReceivedAtUtc { get; set; }
 }

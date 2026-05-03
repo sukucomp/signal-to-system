@@ -11,7 +11,7 @@ A collection of engineering notes exploring the intersection of physical systems
 | 4 | Why Your RFID Tag Isn't 'Instant' | https://www.linkedin.com/...](https://www.linkedin.com/pulse/why-your-rfid-tag-isnt-instant-quick-look-physics-balasubramaniam-i18kc | (no code) |
 | 5 | RFID to Windows USB Port (Python) | https://www.linkedin.com/...](https://www.linkedin.com/pulse/rfid-windows-usb-port-comx-suresh-balasubramaniam-gmssc | [`01-serial-ingestor-python/`](./01-serial-ingestor-python) |
 | 6 | From Prototype to Production: Python vs C# | https://www.linkedin.com/...](https://www.linkedin.com/pulse/from-prototype-production-python-vs-c-rfid-serial-balasubramaniam-haayc | [`02-serial-ingestor-csharp/`](./02-serial-ingestor-csharp) |
-| 7 | Fleet-Ready Event Schema | _(coming)_ | [`03-fleet-ready-schema/`](./03-fleet-ready-schema) |
+| 7 | Fleet-Ready Event Schema | [https://www.linkedin.com/pulse/signal-system-7-from-one-reader-fleet-designing-balasubramaniam-vd6mc/] | [`03-fleet-ready-schema/`](./03-fleet-ready-schema) |
 
 ## About
 

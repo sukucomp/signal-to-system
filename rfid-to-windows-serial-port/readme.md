@@ -42,6 +42,8 @@ python -u rfid_serial_ingestor.py --port COM3 --baud 9600
 
 ## C# Setup (.NET)
 
+Navigate to the folder where your C# ingestor is located.
+
 Prerequisites
 Install .NET SDK (version 6 or later recommended)
 

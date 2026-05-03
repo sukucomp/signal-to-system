@@ -24,7 +24,11 @@ const char *DEVICE_ID = "reader-01";
 // 1.2.0: removed the Arduino String class throughout. Fixed-size char
 // buffers replace heap allocations to eliminate fragmentation on AVR
 // (ATmega328P has only 2KB of RAM total).
-const char *FIRMWARE_VERSION = "1.2.0";
+// 1.3.0: replaced "suppress duplicate UID forever" debounce with a
+// time-windowed debounce (DEBOUNCE_MS). Same card can be re-scanned
+// after the window expires; rapid repeats of the same tap are still
+// suppressed. Correct behaviour for access-control and fleet use.
+const char *FIRMWARE_VERSION = "1.3.0";
 
 // =====================================================================
 // OLED configuration
@@ -56,6 +60,19 @@ const int BUZZER_PIN = 7;
 #define UUID_BUF_LEN 37
 
 // =====================================================================
+// Debounce window
+// =====================================================================
+// Suppress repeat events for the same UID within this many milliseconds.
+// Long enough to absorb the natural multi-read of holding a card against
+// the antenna; short enough that a deliberate re-tap (e.g. "the door
+// didn't open, try again") is registered as a fresh event.
+//
+// 1500 ms is a reasonable default for HF access-control. Tune up for
+// "card held in pocket near a portal" scenarios, down for high-throughput
+// stocktake reads.
+#define DEBOUNCE_MS 1500UL
+
+// =====================================================================
 // Allowed RFID UIDs
 // =====================================================================
 const char *VALID_UIDS[] = {
@@ -71,6 +88,12 @@ MFRC522 rfid(RFID_SS_PIN, RFID_RST_PIN);
 // while the same card is held against the reader. Static buffer, no heap.
 char lastUid[UID_BUF_LEN] = "";
 
+// Timestamp (millis) of the last emitted event. Combined with lastUid this
+// implements time-windowed debouncing — a card held against the reader
+// produces one event, not a stream, but a deliberate re-tap after the
+// debounce window emits a fresh event.
+unsigned long lastScanMs = 0;
+
 // Forward declarations
 void drawHeader();
 void showAccessResult(bool isValid);
@@ -84,7 +107,7 @@ unsigned long seedFromAnalogPins();
 
 void setup() {
   Serial.begin(9600);
-  Serial.println(F("BOOT: rfid-valid-uid-to-python firmware 1.2.0"));
+  Serial.println(F("BOOT: rfid-valid-uid-to-python firmware 1.3.0"));
 
   SPI.begin();
   rfid.PCD_Init();
@@ -118,9 +141,18 @@ void loop() {
 
   bool valid = isValidUid(currentUid);
 
-  if (strcmp(currentUid, lastUid) != 0) {
+  // Time-windowed debounce: emit if the UID is different from last time,
+  // OR if it's the same UID but enough time has passed since we last
+  // emitted. Holding a card on the reader still produces one event;
+  // re-tapping a few seconds later produces a fresh event.
+  unsigned long now = millis();
+  bool isNewUid = (strcmp(currentUid, lastUid) != 0);
+  bool windowExpired = (now - lastScanMs) >= DEBOUNCE_MS;
+
+  if (isNewUid || windowExpired) {
     strncpy(lastUid, currentUid, sizeof(lastUid) - 1);
     lastUid[sizeof(lastUid) - 1] = '\0';
+    lastScanMs = now;
 
     showAccessResult(valid);
     showUid(currentUid);

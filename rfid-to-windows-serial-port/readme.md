@@ -67,6 +67,7 @@ dotnet add package System.IO.Ports
 ```
 
 Replace Program.cs
+
 Replace the contents of (or replace the file):
 
 ```powershell

@@ -26,6 +26,8 @@ EVENT:{"uid":"64 7D 49 BF","valid":true}
 
 ## Python Setup
 
+Navigate to the folder where your Python ingestor is located.
+
 Install the dependency:
 
 ```powershell

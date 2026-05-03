@@ -10,11 +10,12 @@ using System.Text.Json.Serialization;
 // and parses the fleet-ready schema:
 //
 //   {
-//     "event_id":     "<uuid>",
-//     "device_id":    "reader-NN",
-//     "uid":          "AA BB CC DD",
-//     "valid":        true | false,
-//     "ts_device_ms": <int>
+//     "event_id":         "<uuid>",
+//     "device_id":        "reader-NN",
+//     "firmware_version": "1.1.0",
+//     "uid":              "AA BB CC DD",
+//     "valid":            true | false,
+//     "ts_device_ms":     <int>
 //   }
 //
 // The host adds ReceivedAtUtc on ingestion. Downstream stages will add
@@ -104,11 +105,13 @@ class Program
         // the fallback behaviour in the Python ingestor.
         string eventId = data.EventId ?? Guid.NewGuid().ToString();
         string deviceId = data.DeviceId ?? "unknown";
+        string firmwareVersion = data.FirmwareVersion ?? "unknown";
 
         return new RfidEvent
         {
             EventId = eventId,
             DeviceId = deviceId,
+            FirmwareVersion = firmwareVersion,
             Uid = data.Uid,
             Valid = data.Valid,
             TsDeviceMs = data.TsDeviceMs,
@@ -116,14 +119,28 @@ class Program
         };
     }
 
+    static string FormatDeviceMs(long ms)
+    {
+        // Render millis()-since-boot as a human-readable uptime string.
+        // The raw ms value stays in the event object; only display changes.
+        // Example: 20341 -> "20.341s (uptime 0:00:20)"
+        double secondsTotal = ms / 1000.0;
+        long totalSeconds = ms / 1000;
+        long hours = totalSeconds / 3600;
+        long minutes = (totalSeconds % 3600) / 60;
+        long seconds = totalSeconds % 60;
+        return $"{secondsTotal:F3}s (uptime {hours}:{minutes:D2}:{seconds:D2})";
+    }
+
     static void PrintEvent(RfidEvent ev)
     {
         Console.WriteLine("PARSED EVENT:");
         Console.WriteLine($"  Event ID    : {ev.EventId}");
         Console.WriteLine($"  Device ID   : {ev.DeviceId}");
+        Console.WriteLine($"  Firmware    : {ev.FirmwareVersion}");
         Console.WriteLine($"  UID         : {ev.Uid}");
         Console.WriteLine($"  Valid       : {ev.Valid}");
-        Console.WriteLine($"  Device ms   : {ev.TsDeviceMs}");
+        Console.WriteLine($"  Since boot  : {FormatDeviceMs(ev.TsDeviceMs)}");
         Console.WriteLine($"  Received at : {ev.ReceivedAtUtc:o}");
         Console.WriteLine();
     }
@@ -136,6 +153,9 @@ class RfidPayload
 
     [JsonPropertyName("device_id")]
     public string? DeviceId { get; set; }
+
+    [JsonPropertyName("firmware_version")]
+    public string? FirmwareVersion { get; set; }
 
     [JsonPropertyName("uid")]
     public string? Uid { get; set; }
@@ -151,6 +171,7 @@ class RfidEvent
 {
     public string? EventId { get; set; }
     public string? DeviceId { get; set; }
+    public string? FirmwareVersion { get; set; }
     public string? Uid { get; set; }
     public bool Valid { get; set; }
     public long TsDeviceMs { get; set; }

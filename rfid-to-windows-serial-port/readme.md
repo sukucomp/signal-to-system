@@ -67,12 +67,12 @@ dotnet add package System.IO.Ports
 ```
 
 Replace Program.cs
-Replace the contents of:
+Replace the contents of (or replace the file):
 
 ```powershell
 RfidReader/Program.cs
 ```
-with the C# RFID listener code.
+with the C# RFID ingestor code.
 
 Build:
 
@@ -97,11 +97,14 @@ Listening for RFID events...
 When a card is scanned:
 
 ```powershell
-RAW: EVENT:{"uid":"64 7D 49 BF","valid":true}
+RAW: EVENT:{"event_id":"98dccaad-c86a-4bed-a580-1a9a9dcfa626","device_id":"reader-01","uid":"AA A2 31 C4","valid":true,"ts_device_ms":3332888}
 PARSED EVENT:
-UID   : 64 7D 49 BF
-Valid : True
-Time  : 2026-04-27T12:00:00Z
+  Event ID    : 98dccaad-c86a-4bed-a580-1a9a9dcfa626
+  Device ID   : reader-01
+  UID         : AA A2 31 C4
+  Valid       : True
+  Device ms   : 3332888
+  Received at : 2026-05-03T10:22:03.7678574Z
 ```
 
 ## Notes

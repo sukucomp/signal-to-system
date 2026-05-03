@@ -26,6 +26,8 @@ EVENT:{"uid":"64 7D 49 BF","valid":true}
 
 ## Python Setup
 
+Navigate to the folder where your Python ingestor is located.
+
 Install the dependency:
 
 ```powershell
@@ -39,6 +41,8 @@ python -u rfid_serial_ingestor.py --port COM3 --baud 9600
 ```
 
 ## C# Setup (.NET)
+
+Navigate to the folder where your C# ingestor is located.
 
 Prerequisites
 Install .NET SDK (version 6 or later recommended)

@@ -14,8 +14,8 @@ infrastructure.
 | File | Role |
 |---|---|
 | `rfid-valid-uid-to-python.ino` | Arduino sketch (unchanged from previous folder; carried for self-containment) |
-| `rfid_serial_ingestor.py` | Python ingestor that reads serial events and publishes to Service Bus |
-| `Program.cs` | C# ingestor doing the same, in mirror-image structure |
+| `rfid-serial-ingestor-az-service-bus.py` | Python ingestor that reads serial events and publishes to Service Bus |
+| `rfid-serial-ingestor-az-service-bus.cs` | C# ingestor doing the same, in mirror-image structure |
 | `RfidReader.csproj` | C# project file (referenced packages: `Azure.Messaging.ServiceBus`, `System.IO.Ports`) |
 | `SCHEMA.md` | The event contract (carried forward from Post 7, no change in v1.3.0) |
 | `README.md` | This file |
@@ -65,17 +65,10 @@ the Azure portal:
 In PowerShell:
 
 ```powershell
-$env:SERVICEBUS_CONNECTION_STRING = "Endpoint=sb://...;SharedAccessKeyName=...;SharedAccessKey=..."
+$env:SERVICEBUS_CONNECTION_STRING = "Endpoint=sb://<service_bus_namespace-host_name>;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=..."
 ```
 
 The variable is per-PowerShell-session. Reopen a window, set it again.
-
-> **Production note.** Connection strings are long-lived secrets with no
-> audit trail of who sent a message. They are right for one developer's
-> laptop talking to one queue, and wrong for production. The migration to
-> Microsoft Entra ID with managed identity is deferred to a later post,
-> when the consumer moves to Container Apps and identity infrastructure
-> earns its place.
 
 ## Running the Python ingestor
 

@@ -1,12 +1,25 @@
--- ============================================
--- Table Growth Tracker - All DBs on RDS Server
--- Top 5 growing tables per database (last XX hours)
--- ============================================
+-- =====================================================================
+-- RDS SQL Server - Table Growth Tracker
+-- Top N growing tables per database, over any time window (last XX hours)
+--
+-- Author: <your name>
+-- License: MIT
+-- Tested on: AWS RDS for SQL Server (Standard Edition)
+-- Requires: SQL Server Agent (Standard or Enterprise edition)
+--
+-- Usage:
+--   STEP 1 - Run ONCE to create the tracking database and table
+--   STEP 2 - Schedule this hourly via SQL Server Agent
+--   STEP 3 - Run anytime to see top N growing tables in the last XX hours
+--   STEP 4-7 - Optional health-check queries for the monitoring itself
+--   STEP 8 - Optional retention cleanup
+-- =====================================================================
 
--- ===================================================
+
+-- =====================================================================
 -- STEP 1: ONE-TIME SETUP - Create tracking DB & table
 -- Run this ONCE
--- ===================================================
+-- =====================================================================
 
 USE master;
 GO
@@ -35,9 +48,10 @@ END
 GO
 
 
--- ====================================================================
--- STEP 2: TAKE SNAPSHOT (run this on a schedule, e.g. hourly or daily)
--- Loops through all user databases on the server
+-- =====================================================================
+-- STEP 2: TAKE SNAPSHOT
+-- Schedule this hourly via SQL Server Agent for best results.
+-- Loops through all user databases on the instance.
 -- =====================================================================
 
 USE DBA_Monitoring;
@@ -64,13 +78,13 @@ INNER JOIN sys.indexes i          ON t.object_id = i.object_id
 INNER JOIN sys.partitions p       ON i.object_id = p.object_id AND i.index_id = p.index_id
 INNER JOIN sys.allocation_units a ON p.partition_id = a.container_id
 WHERE t.is_ms_shipped = 0 
-  AND i.index_id IN (0,1)  -- heap or clustered only, avoids double-counting nonclustered indexes
+  AND i.index_id IN (0,1)  -- heap or clustered only; avoids double-counting nonclustered indexes
 GROUP BY s.name, t.name;
 '
 FROM sys.databases
-WHERE database_id > 4                       -- skip system DBs
+WHERE database_id > 4                                  -- skip system DBs
   AND state_desc = 'ONLINE'
-  AND name NOT IN ('rdsadmin','DBA_Monitoring');
+  AND name NOT IN ('rdsadmin','DBA_Monitoring');       -- skip RDS internal + this DB itself
 
 EXEC sp_executesql @sql;
 
@@ -78,17 +92,20 @@ PRINT 'Snapshot taken at ' + CONVERT(VARCHAR, @SnapTime, 120);
 GO
 
 
+-- =====================================================================
+-- STEP 3: REPORT - Top N growing tables per DB in the LAST XX hours
+-- 
+-- Change @HoursBack to any window: 1, 6, 24, 168 (week), 720 (month)...
+-- Change @TopN to control how many tables per DB you want to see.
+-- Change @TimezoneOffsetHours to convert UTC timestamps to your local time.
+-- =====================================================================
+
 USE DBA_Monitoring;
 GO
 
-
--- ============================================
--- STEP 3 (Corrected & Parameterized)
--- Top N growing tables per DB in the LAST XX hours
--- ============================================
-
-DECLARE @HoursBack INT = 24;          -- <<< CHANGE THIS
-DECLARE @TopN      INT = 5;
+DECLARE @HoursBack            INT = 24;   -- <<< CHANGE THIS
+DECLARE @TopN                 INT = 5;
+DECLARE @TimezoneOffsetHours  INT = 0;    -- e.g. 8 for UTC+8, -5 for UTC-5, 0 to keep UTC
 
 ;WITH LatestSnap AS (
     SELECT DatabaseName, SchemaName, TableName, TotalRows, TotalSpaceMB, SnapshotTime,
@@ -98,7 +115,7 @@ DECLARE @TopN      INT = 5;
 ),
 BaselineSnap AS (
     -- Pick the snapshot CLOSEST to (now - @HoursBack), not the oldest ever.
-    -- ABS(DATEDIFF()) finds the snapshot nearest to our target time.
+    -- ABS(DATEDIFF()) finds the snapshot nearest to the target time.
     SELECT DatabaseName, SchemaName, TableName, TotalRows, TotalSpaceMB, SnapshotTime,
            ROW_NUMBER() OVER (
                PARTITION BY DatabaseName, SchemaName, TableName 
@@ -112,8 +129,8 @@ Growth AS (
         l.DatabaseName,
         l.SchemaName,
         l.TableName,
-        DATEADD(HOUR, 8, b.SnapshotTime)                          AS BaselineTimeLocal,
-        DATEADD(HOUR, 8, l.SnapshotTime)                          AS LatestTimeLocal,
+        DATEADD(HOUR, @TimezoneOffsetHours, b.SnapshotTime)        AS BaselineTimeLocal,
+        DATEADD(HOUR, @TimezoneOffsetHours, l.SnapshotTime)        AS LatestTimeLocal,
         CAST(DATEDIFF(MINUTE, b.SnapshotTime, l.SnapshotTime) / 60.0 AS DECIMAL(8,2)) AS HoursElapsed,
         b.TotalSpaceMB                                            AS OldSizeMB,
         l.TotalSpaceMB                                            AS NewSizeMB,
@@ -134,8 +151,8 @@ Growth AS (
         AND b.TableName    = l.TableName
         AND b.rn = 1
     WHERE l.rn = 1
-      AND l.SnapshotTime <> b.SnapshotTime                         -- can't compare a snap to itself
-      AND l.TotalSpaceMB > b.TotalSpaceMB                          -- only growing tables
+      AND l.SnapshotTime <> b.SnapshotTime                        -- can't compare a snap to itself
+      AND l.TotalSpaceMB > b.TotalSpaceMB                         -- only growing tables
 ),
 Ranked AS (
     SELECT *,
@@ -162,9 +179,10 @@ ORDER BY DatabaseName, GrowthMB DESC;
 GO
 
 
--- ================================================
--- STEP 4: Storage used by the monitoring DB itself
--- ================================================
+-- =====================================================================
+-- STEP 4 (OPTIONAL): Storage used by the monitoring DB itself
+-- Use this to verify the tracking overhead stays small.
+-- =====================================================================
 
 USE DBA_Monitoring;
 GO
@@ -172,7 +190,7 @@ GO
 -- Size of the snapshot table specifically
 SELECT 
     t.name                                                          AS TableName,
-    p.rows                                                          AS RowCount,
+    p.rows                                                          AS [RowCount],
     CAST(SUM(a.total_pages) * 8.0 / 1024 AS DECIMAL(10,2))          AS TotalSpaceMB,
     CAST(SUM(a.used_pages)  * 8.0 / 1024 AS DECIMAL(10,2))          AS UsedSpaceMB,
     CAST(SUM(a.total_pages) * 8.0 / 1024 / 1024 AS DECIMAL(10,2))   AS TotalSpaceGB
@@ -190,11 +208,13 @@ SELECT
     CAST(size * 8.0 / 1024 AS DECIMAL(10,2))                        AS AllocatedMB,
     CAST(FILEPROPERTY(name,'SpaceUsed') * 8.0 / 1024 AS DECIMAL(10,2)) AS UsedMB
 FROM sys.database_files;
+GO
 
 
--- ====================================================
--- STEP 5: The SQL Agent job records execution duration  
--- ====================================================
+-- =====================================================================
+-- STEP 5 (OPTIONAL): SQL Agent job execution history & duration
+-- Replace job name to match your scheduled job.
+-- =====================================================================
 
 USE msdb;
 GO
@@ -214,18 +234,20 @@ SELECT TOP 30
     END                                             AS Status
 FROM msdb.dbo.sysjobs j
 INNER JOIN msdb.dbo.sysjobhistory h ON j.job_id = h.job_id
-WHERE j.name = 'DBA_TableSizeSnapshot'
+WHERE j.name = 'DBA_TableSizeSnapshot'              -- <<< match your job name
   AND h.step_id = 0                                 -- 0 = overall job summary
 ORDER BY h.run_date DESC, h.run_time DESC;
+GO
 
 
--- ==================================================
--- STEP 6: Actual CPU/memory used by the job's query  
--- ==================================================
+-- =====================================================================
+-- STEP 6 (OPTIONAL): Actual CPU / I/O used by the snapshot query
+-- Survives until plan cache eviction; useful for catching regression.
+-- =====================================================================
 
 SELECT TOP 5
     qs.execution_count,
-    qs.total_worker_time / 1000                     AS TotalCPUms,
+    qs.total_worker_time / 1000                      AS TotalCPUms,
     qs.total_worker_time / qs.execution_count / 1000 AS AvgCPUms,
     qs.total_elapsed_time / qs.execution_count / 1000 AS AvgElapsedMs,
     qs.total_logical_reads / qs.execution_count      AS AvgLogicalReads,
@@ -239,13 +261,14 @@ CROSS APPLY sys.dm_exec_sql_text(qs.sql_handle) st
 WHERE st.text LIKE '%TableSizeSnapshot%'
   AND st.text LIKE '%INSERT%'
 ORDER BY qs.total_worker_time DESC;
+GO
 
 
--- =================================
--- STEP 7:  Total instance activity  
--- =================================
+-- =====================================================================
+-- STEP 7 (OPTIONAL): Total instance I/O per database since startup
+-- Use to put DBA_Monitoring overhead in proportion to real workload.
+-- =====================================================================
 
--- Total reads/writes since SQL Server started up
 SELECT 
     DB_NAME(database_id)                            AS DatabaseName,
     SUM(num_of_reads)                               AS TotalReads,
@@ -254,10 +277,14 @@ SELECT
 FROM sys.dm_io_virtual_file_stats(NULL, NULL)
 GROUP BY DB_NAME(database_id)
 ORDER BY TotalWrittenGB DESC;
+GO
 
 
--- ============================================
--- STEP 8: Cleanup old snapshots (keep 30 days)
--- ============================================
+-- =====================================================================
+-- STEP 8 (OPTIONAL): Retention cleanup - keeps last 30 days
+-- Run this manually, or schedule it as a weekly SQL Agent job.
+-- =====================================================================
+
 DELETE FROM DBA_Monitoring.dbo.TableSizeSnapshot
 WHERE SnapshotTime < DATEADD(DAY, -30, SYSUTCDATETIME());
+GO

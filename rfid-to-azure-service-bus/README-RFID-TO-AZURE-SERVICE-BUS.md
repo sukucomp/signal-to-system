@@ -1,13 +1,12 @@
 # RFID to Azure Service Bus
 
-This is the cloud hop. Events from Posts 5–7 stayed on the local machine.
+This is the cloud hop.
 Here, every scan is published to an Azure Service Bus queue with the
-device-generated `event_id` as the Service Bus `MessageId` — the
-idempotency key designed in Post 7 doing real work in real cloud
+device-generated `event_id` as the Service Bus `MessageId`.
 infrastructure.
 
-> Companion post: **Signal to System #8 — From Schema to Pipeline: First Cloud Hop**
-> *(LinkedIn link to be added once published)*
+> Companion post: **Signal to System #8: First Cloud Hop - From Local Machine to Azure Service Bus**
+> *([LinkedIn link to be added once published](https://www.linkedin.com/pulse/signal-system-8-first-cloud-hop-from-local-machine-balasubramaniam-wvmrc/))*
 
 ## What's in this folder
 

@@ -3,7 +3,6 @@
 This is the cloud hop.
 Here, every scan is published to an Azure Service Bus queue with the
 device-generated `event_id` as the Service Bus `MessageId`.
-infrastructure.
 
 > Companion post: **Signal to System #8: First Cloud Hop - From Local Machine to Azure Service Bus**
 > *([www.linkedin.com/...](https://www.linkedin.com/pulse/signal-system-8-first-cloud-hop-from-local-machine-balasubramaniam-wvmrc/))*
@@ -16,8 +15,8 @@ infrastructure.
 | `rfid-serial-ingestor-az-service-bus.py` | Python ingestor that reads serial events and publishes to Service Bus |
 | `rfid-serial-ingestor-az-service-bus.cs` | C# ingestor doing the same, in mirror-image structure |
 | `RfidReader.csproj` | C# project file (referenced packages: `Azure.Messaging.ServiceBus`, `System.IO.Ports`) |
-| `SCHEMA.md` | The event contract (carried forward from Post 7, no change in v1.3.0) |
-| `README.md` | This file |
+| `SCHEMA-RFID-TO-AZURE-SERVICE-BUS.md` | The event contract |
+| `README-RFID-TO-AZURE-SERVICE-BUS.md` | This file |
 
 The Arduino sketch is identical to the one from `rfid-to-windows-serial-port/`.
 It's duplicated here deliberately — each folder is meant to be self-sufficient,

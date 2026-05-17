@@ -4,8 +4,7 @@ This is the cloud hop.
 Here, every scan is published to an Azure Service Bus queue with the
 device-generated `event_id` as the Service Bus `MessageId`.
 
-> Companion post: **Signal to System #8: First Cloud Hop - From Local Machine to Azure Service Bus**
-> *([www.linkedin.com/...](https://www.linkedin.com/pulse/signal-system-8-first-cloud-hop-from-local-machine-balasubramaniam-wvmrc/))*
+> [Companion post: **Signal to System #8: First Cloud Hop - From Local Machine to Azure Service Bus**](https://www.linkedin.com/pulse/signal-system-8-first-cloud-hop-from-local-machine-balasubramaniam-wvmrc/)
 
 ## What's in this folder
 

@@ -19,10 +19,9 @@ device-generated `event_id` as the Service Bus `MessageId`.
 | `README-RFID-TO-AZURE-SERVICE-BUS.md` | This file |
 
 The Arduino sketch is identical to the one from `rfid-to-windows-serial-port/`.
-It's duplicated here deliberately — each folder is meant to be self-sufficient,
+Each folder is meant to be self-sufficient,
 so a reader following the LinkedIn series can clone *one* folder and have
-everything needed for *that* post to work. Path of least friction beats
-strict DRY for portfolio code.
+everything needed for *that* post to work.
 
 ## Pipeline at this stage
 
@@ -63,7 +62,7 @@ the Azure portal:
 In PowerShell:
 
 ```powershell
-$env:SERVICEBUS_CONNECTION_STRING = "Endpoint=sb://<service_bus_namespace-host_name>;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=..."
+$env:SERVICEBUS_CONNECTION_STRING = "Endpoint=sb://<service_bus_namespace-host_name>;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=<primary_connection_string>"
 ```
 
 The variable is per-PowerShell-session. Reopen a window, set it again.

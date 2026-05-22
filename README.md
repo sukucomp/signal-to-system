@@ -1,6 +1,30 @@
 # signal-to-system
 A collection of engineering notes exploring the intersection of physical systems and modern IT platforms. Covers RFID, edge systems, Kubernetes, and cloud infrastructure, with a focus on real-world deployment, reliability, and system integration across device-to-cloud architectures.
 
+## Repository structure
+signal-to-system/
+├── README.md
+│
+├── rfid-to-windows-serial-port/      # Posts 5–7: local serial ingestion
+│   ├── rfid-valid-uid-to-python.ino  #   Arduino sketch (MFRC522 reader)
+│   ├── rfid_serial_ingestor.py       #   Python serial ingestor
+│   ├── program.cs                    #   C# serial ingestor
+│   ├── SCHEMA.md                     #   the fleet-ready event contract
+│   └── README.md
+│
+├── rfid-to-azure-service-bus/        # Post 8: first cloud hop
+│   ├── rfid-valid-uid-to-python.ino  #   Arduino sketch (carried for self-containment)
+│   ├── rfid-serial-ingestor-az-service-bus.py   #   Python ingestor + Service Bus publish
+│   ├── rfid-serial-ingestor-az-service-bus.cs   #   C# ingestor + Service Bus publish
+│   ├── RfidReader.csproj             #   C# project (Azure.Messaging.ServiceBus)
+│   ├── az-service-bus-dedup-test.py  #   one-off: proves dedup collapses repeated MessageIds
+│   ├── requirements.txt              #   pyserial, azure-servicebus
+│   ├── SCHEMA.md                     #   event contract + cloud mapping section
+│   └── README.md
+│
+└── db/
+    └── table-growth-tracker.sql      # scratch SQL for tracking event-row growth
+
 ## Posts
 
 | # | Title | LinkedIn | Code |

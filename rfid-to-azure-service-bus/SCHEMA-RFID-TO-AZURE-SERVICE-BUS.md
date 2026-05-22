@@ -47,11 +47,9 @@ gives observability into where latency or backpressure accumulates.
 ## Why each field exists
 
 **`event_id` (device-generated UUID v4).** The single most important
-addition. Once the pipeline includes a queue with retry semantics, the
-consumer must be able to tell "I have already processed this event"
-from "this is a new event." Without an immutable, device-generated key,
-deduplication is impossible — host or queue timestamps are not unique
-enough. Generating it on the device means the same key flows end-to-end.
+addition. Without an immutable, device-generated key,
+deduplication is impossible. Generating it on the device means the same 
+key flows end-to-end.
 
 The Arduino implementation seeds the RNG from a floating analog pin and
 generates UUID v4s inline. This is not cryptographically secure; it is
@@ -59,9 +57,7 @@ sufficient for de-duplication of scan events but should not be used as
 an authentication token or against an adversarial setting.
 
 **`device_id`.** A single-reader prototype does not need this. A fleet
-of 50 readers absolutely does. Queries like "which reader is failing?",
-"which doors had the most denials this hour?", and "is reader-12 still
-online?" all require it. Provisioned at flash time as a simple constant
+of 50 readers absolutely does. Provisioned at flash time as a simple constant
 in this stage; in a production fleet it would typically be derived from
 a hardware identifier (MAC, chip serial) or assigned during onboarding.
 
@@ -74,8 +70,8 @@ later by the cloud, where reliable clocks exist.
 
 **`firmware_version`.** Trivially available — the device knows what it
 is running, because *we* set the constant when flashing. Including it
-in every event means any anomaly seen at the cloud layer ("denials
-spiked after Tuesday") can be correlated with a firmware change without
+in every event means any anomaly seen at the cloud layer can be correlated 
+with a firmware change without
 needing a separate fleet-inventory lookup. The discipline that makes
 this field actually useful is bumping the version on *every* change to
 the sketch that affects what it emits or how it behaves. A field that
@@ -90,7 +86,7 @@ it lets a partial fleet upgrade work without a flag day. Any other
 missing field is a hard failure — those carry semantic meaning that
 cannot be fabricated.
 
-## Cloud mapping (added in Post 8)
+## Cloud mapping
 
 When the host publishes an event to Azure Service Bus, two things happen
 to the schema:

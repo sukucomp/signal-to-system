@@ -81,10 +81,7 @@ always reads `1.0.0` is just decoration.
 
 The host-side ingestors (Python and C#) accept events that are missing
 `event_id`, `device_id`, or `firmware_version` and fill in defaults
-(`uuid4()` host-side, `"unknown"` for the others). This is deliberate:
-it lets a partial fleet upgrade work without a flag day. Any other
-missing field is a hard failure — those carry semantic meaning that
-cannot be fabricated.
+(`uuid4()` host-side, `"unknown"` for the others).
 
 ## Cloud mapping
 
@@ -105,10 +102,6 @@ MessageId into a single delivered message. The device-generated UUID
 flows through the wire, becomes the queue's idempotency key, and will
 later flow through to the consumer's row key in storage — three layers
 of idempotency, all anchored on the same field.
-
-This is the pay-off for designing `event_id` into the schema in Post 7.
-The choice that looked like over-engineering for a single device on a
-desk turns out to be exactly what makes the cloud hop honest.
 
 ## Schema versioning
 

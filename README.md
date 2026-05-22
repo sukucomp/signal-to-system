@@ -2,6 +2,7 @@
 A collection of engineering notes exploring the intersection of physical systems and modern IT platforms. Covers RFID, edge systems, Kubernetes, and cloud infrastructure, with a focus on real-world deployment, reliability, and system integration across device-to-cloud architectures.
 
 ## Repository structure
+```
 signal-to-system/
 ├── README.md
 │
@@ -24,6 +25,7 @@ signal-to-system/
 │
 └── db/
     └── table-growth-tracker.sql      # scratch SQL for tracking event-row growth
+```
 
 ## Posts
 

@@ -140,21 +140,3 @@ with ServiceBusClient.from_connection_string(cs) as client:
 The same `event_id` field plays two roles: a unique key per real-world
 tap, and a deduplication key against infrastructure retries. Either
 job alone wouldn't be enough.
-
-## What's not yet in this folder
-
-- A consumer reading from the queue. Right now messages accumulate.
-  Coming in Post 9.
-- A local SQLite buffer for offline operation. Right now a network
-  failure during publish is logged and skipped — the event is lost.
-  Coming in Post 9.
-- Managed identity authentication. See the production note above.
-- CI workflow to compile the Arduino sketch and build the .NET project
-  on every push. Reserved for a later post.
-
-## Cost note
-
-A Standard-tier Service Bus namespace runs roughly USD $10/month at
-base. Tearing it down between development sessions saves money;
-re-creating takes about two minutes through the portal. For a portfolio
-project, provision-demo-record-tear-down is the right pattern.

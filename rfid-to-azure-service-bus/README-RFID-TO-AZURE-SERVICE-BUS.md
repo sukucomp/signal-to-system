@@ -115,11 +115,27 @@ The producer-side pipeline is then complete.
 
 Tap the **same card** five times in 30 seconds. You'll see five messages
 in the queue, each with a *different* `event_id` — because each tap is
-a real, distinct event. That's correct: the user tapped five times.
+a real, distinct event.
 
 To verify duplicate detection is actually firing, send the *same MessageId*
 deliberately (a small one-off script can do this — supply the same UUID for
 five sends in a row). Service Bus will collapse them into one message.
+
+```
+import os, json, uuid
+from azure.servicebus import ServiceBusClient, ServiceBusMessage
+
+cs = os.environ["SERVICEBUS_CONNECTION_STRING"]
+fixed_id = str(uuid.uuid4())
+
+with ServiceBusClient.from_connection_string(cs) as client:
+    with client.get_queue_sender("rfid-events") as sender:
+        for i in range(5):
+            msg = ServiceBusMessage(json.dumps({"test": "dedup", "attempt": i}))
+            msg.message_id = fixed_id  # same ID every time
+            sender.send_messages(msg)
+            print(f"Sent attempt {i} with id={fixed_id}")
+```
 
 The same `event_id` field plays two roles: a unique key per real-world
 tap, and a deduplication key against infrastructure retries. Either

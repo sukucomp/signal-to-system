@@ -21,7 +21,7 @@ This project shows flow as below:
 Each scan is emitted as a single line:
 
 ```text
-EVENT:{"uid":"64 7D 49 BF","valid":true}
+EVENT:{"event_id":"a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d","device_id":"reader-01","firmware_version":"1.1.0","uid":"64 7D 49 BF","valid":true,"ts_device_ms":12345}
 ```
 
 ## Python Setup
@@ -96,14 +96,15 @@ Listening for RFID events...
 When a card is scanned:
 
 ```powershell
-RAW: EVENT:{"event_id":"98dccaad-c86a-4bed-a580-1a9a9dcfa626","device_id":"reader-01","uid":"AA A2 31 C4","valid":true,"ts_device_ms":3332888}
+RAW: EVENT:{"event_id":"03acda01-be06-4542-a7ab-aebfb85b3fc0","device_id":"reader-01","firmware_version":"1.3.0","uid":"64 7D 49 BF","valid":true,"ts_device_ms":3827}
 PARSED EVENT:
-  Event ID    : 98dccaad-c86a-4bed-a580-1a9a9dcfa626
+  Event ID    : 03acda01-be06-4542-a7ab-aebfb85b3fc0
   Device ID   : reader-01
-  UID         : AA A2 31 C4
+  Firmware    : 1.3.0
+  UID         : 64 7D 49 BF
   Valid       : True
-  Device ms   : 3332888
-  Received at : 2026-05-03T10:22:03.7678574Z
+  Since boot  : 3.827s (uptime 0:00:03)
+  Received at : 2026-05-10T13:53:28.340284+00:00
 ```
 
 ## Notes

@@ -4,27 +4,40 @@ A collection of engineering notes exploring the intersection of physical systems
 ## Repository structure
 ```
 signal-to-system/
+├── db/
+│   └── table-growth-tracker.sql
 ├── README.md
-│
-├── rfid-to-windows-serial-port/      # Posts 5–7: local serial ingestion
-│   ├── rfid-valid-uid-to-python.ino  # Arduino sketch (MFRC522 reader)
-│   ├── rfid_serial_ingestor.py       # Python serial ingestor
-│   ├── program.cs                    # C# serial ingestor
-│   ├── SCHEMA.md                     # the fleet-ready event contract
-│   └── README.md
-│
-├── rfid-to-azure-service-bus/        # Post 8: first cloud hop
-│   ├── rfid-valid-uid-to-python.ino  # Arduino sketch (carried for self-containment)
-│   ├── rfid-serial-ingestor-az-service-bus.py   # Python ingestor + Service Bus publish
-│   ├── rfid-serial-ingestor-az-service-bus.cs   # C# ingestor + Service Bus publish
-│   ├── RfidReader.csproj             # C# project (Azure.Messaging.ServiceBus)
-│   ├── az-service-bus-dedup-test.py  # one-off: proves dedup collapses repeated MessageIds
-│   ├── requirements.txt              # pyserial, azure-servicebus
-│   ├── SCHEMA.md                     # event contract + cloud mapping section
-│   └── README.md
-│
-└── db/
-    └── table-growth-tracker.sql      # scratch SQL for tracking event-row growth
+├── rfid-to-azure-service-bus/
+│   ├── az-service-bus-dedup-test.py
+│   ├── README.md
+│   ├── requirements.txt
+│   ├── rfid-serial-ingestor-az-service-bus.cs
+│   ├── rfid-serial-ingestor-az-service-bus.py
+│   ├── rfid-valid-uid-to-python.ino
+│   ├── RfidReader.csproj
+│   └── SCHEMA.md
+├── rfid-to-azure-table-storage/
+│   ├── arduino/
+│   │   └── rfid-valid-uid-to-python.ino
+│   ├── az-function-consumer/
+│   │   ├── host.json
+│   │   ├── local.settings.json
+│   │   ├── Program.cs
+│   │   ├── rfid-event-consumer-az-function.cs
+│   │   └── rfid-event-consumer-az-function.csproj
+│   ├── host-ingestor/
+│   │   ├── requirements.txt
+│   │   ├── rfid-serial-ingestor-az-service-bus.cs
+│   │   ├── rfid-serial-ingestor-az-service-bus.py
+│   │   └── RfidReader.csproj
+│   ├── README.md
+│   └── SCHEMA.md
+└── rfid-to-windows-serial-port/
+    ├── program.cs
+    ├── README.md
+    ├── rfid_serial_ingestor.py
+    ├── rfid-valid-uid-to-python.ino
+    └── SCHEMA.md
 ```
 
 ## Posts

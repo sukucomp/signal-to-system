@@ -112,24 +112,6 @@ subsequent deploys are fast.
    matching the device_id and RowKey matching the event_id from the
    ingestor's terminal output.
 
-## What's not yet in this folder
-
-- **No offline buffering on the ingestor side.** If the network drops
-  during publish, the event is currently logged and lost. The local
-  SQLite ring buffer with retry-with-backoff is the subject of the
-  next post.
-- **Connection strings, not managed identity.** The Function App uses
-  connection strings stored as app settings. Production would use
-  Microsoft Entra ID with a managed identity. Deferred to a later post
-  when the consumer moves to containerised compute and identity
-  infrastructure earns its place.
-- **No infrastructure-as-code.** All resources were created through
-  the Azure Portal. Bicep / Terraform versions are deferred — they
-  earn their own post when the topology stabilises.
-- **No structured logging or KQL queries.** Application Insights is
-  enabled and capturing data, but no dashboards or alerts yet. The
-  observability post is later in the series.
-
 ## A note on cost
 
 The Function App runs on Flex Consumption (scale to zero, pay per

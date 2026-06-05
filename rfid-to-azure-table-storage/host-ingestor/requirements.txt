@@ -1,0 +1,9 @@
+# Runtime dependencies for the Python RFID serial ingestor.
+#
+# Install with:
+#   python -m pip install -r requirements.txt
+#
+# pyserial        — reads EVENT: lines from the serial-connected Arduino
+# azure-servicebus — publishes parsed events to the Azure Service Bus queue
+pyserial>=3.5,<4
+azure-servicebus>=7.12,<8

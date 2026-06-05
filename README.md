@@ -40,7 +40,7 @@ signal-to-system/
     └── SCHEMA.md
 ```
 
-## Posts
+## LinkedIn Posts
 
 | # | Title | LinkedIn | Code |
 |---|-------|----------|------|

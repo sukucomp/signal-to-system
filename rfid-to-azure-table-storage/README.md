@@ -10,8 +10,7 @@ somewhere visible in the cloud, end to end.
 
 ## What this folder adds over the previous stage
 
-The previous folder (`rfid-to-azure-service-bus/`) ended at the queue —
-events were published successfully, but nothing read them. This folder
+The previous folder (`rfid-to-azure-service-bus/`) ended at the queue. Events were published successfully, but nothing read them. This folder
 adds the consumer:
 
 - An **Azure Function** with a Service Bus trigger that fires on each

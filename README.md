@@ -4,8 +4,6 @@ A collection of engineering notes exploring the intersection of physical systems
 ## Repository structure
 ```
 signal-to-system/
-├── db/
-│   └── table-growth-tracker.sql
 ├── README.md
 ├── rfid-to-azure-service-bus/
 │   ├── az-service-bus-dedup-test.py

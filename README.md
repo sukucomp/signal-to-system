@@ -57,7 +57,7 @@ signal-to-system/
 
 ## About
 
-Built by Suresh Balasubramaniam — Systems & Solutions Engineer
+I am a Systems & Solutions Engineer
 exploring the intersection of Electrical Engineering and modern IT
 platforms. Each folder corresponds to one published post; the post
 provides the narrative, the folder provides the working code.

@@ -6,7 +6,7 @@ Setting up AWS Database Migration Service (DMS) against Amazon RDS SQL Server so
 
 ## Table of contents
 
-- [What is CDC and why enable it](#what-is-cdc-and-why-enable-it)
+- [What is CDC and why enable it?](#what-is-cdc-and-why-enable-it)
 - [CDC is not persistent across RDS restores](#cdc-is-not-persistent-across-rds-restores)
 - [Environment conventions](#environment-conventions)
 - [Key concepts](#key-concepts)
@@ -14,7 +14,7 @@ Setting up AWS Database Migration Service (DMS) against Amazon RDS SQL Server so
 
 ---
 
-## What is CDC and why enable it
+## What is CDC and why enable it?
 
 **Change Data Capture (CDC)** is a SQL Server feature that records every `INSERT`, `UPDATE`, and `DELETE` against tracked tables into a set of side tables (`cdc.<schema>_<table>_CT`), along with the log sequence number (LSN) and operation type for each row change. The capture happens asynchronously by reading the transaction log. The source tables and applications are not affected.
 

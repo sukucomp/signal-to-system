@@ -1,4 +1,4 @@
-# RDS SQL Server — Backup & Restore Runbook with User & Role Preservation
+# RDS SQL Server - Backup & Restore Runbook with User & Role Preservation
 
 A four-step T-SQL runbook for backing up and restoring an **Amazon RDS for SQL
 Server** database via native `.bak` files in S3 — **without losing database
@@ -10,17 +10,16 @@ This runbook captures those mappings *before* the restore, into a
 The steps are **run separately**, by design, so an engineer can confirm the
 capture exists and looks correct **before** the database is touched.
 
-## Where each step runs
+## Where each step runs?
 
 - **Step 1 (backup)** runs on the **source** instance — the DB you are copying *from*.
 - **Steps 2–4 (capture / restore / replay)** run on the **target** instance — the
   DB you are copying *into*.
 
-For example; a prod → stg copy: back up prod (Step 1), then capture/restore/replay against
-stg (Steps 2–4). If a suitable scheduled/daily backup already exists in S3, you
+If a suitable scheduled/daily backup already exists in S3, you
 can **skip Step 1**.
 
-## Why it's split
+## Why it's split?
 
 The capture is written to a real table (`<ops_db>.dbo.RdsRestoreReplay`), not a
 session table variable. That means:
@@ -74,7 +73,7 @@ expected users/roles are present and the count is non-zero before continuing.
 ```sql
 DECLARE @database_name sysname       = N'<db_name>';
 DECLARE @ops_db        sysname       = N'msdb';
-DECLARE @env           nvarchar(10)  = N'<env>';                       -- dev | stg | prd
+DECLARE @env           nvarchar(10)  = N'<env>';                       -- dev | stg | prod
 DECLARE @s3_bucket     nvarchar(200) = @env + N'-yourorg-db-backups';
 --      @s3_bucket     alt           = @env + N'-yourorg-db-backups-alt';
 DECLARE @s3_prefix     nvarchar(200) = @database_name;
@@ -96,7 +95,7 @@ Run after Step 3 prints `RESTORE COMPLETE`. Review the verification grid.
 For a typical restore you only touch three things at the top of the scripts:
 
 1. **`@database_name`** — the DB name.
-2. **`@env`** — `dev` / `stg` / `prd`.
+2. **`@env`** — `dev` / `stg` / `prod`.
 3. **`@s3_bucket`** — pick the backup source bucket for your naming convention
    (the scripts show two examples to illustrate splitting by workload/product line —
    replace both with your own bucket names).
@@ -173,11 +172,4 @@ databases without CDC, none of this applies.
 
 The scripts contain no credentials and no hard-coded principal names — user and
 role names are read from the live instance at runtime. Bucket patterns and
-environment identifiers are examples only. Keep this in a **private repository**
-and review the excluded-accounts list and bucket patterns before use.
-
-## Disclaimer
-
-Test against a non-production database first. Native backup/restore is destructive
-by design; you are responsible for verifying the `.bak` source, the target, and
-your backups before running this against production.
+environment identifiers are examples only.

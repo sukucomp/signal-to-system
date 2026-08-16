@@ -31,7 +31,7 @@ Adding an index is a low-risk change (it adds a shortcut, it doesn't touch your 
 
 ---
 
-# Part A — What we changed on a production database
+# Part A - What we changed on a production database?
 
 ### The problem
 A data-matching pipeline suddenly slowed roughly 10× overnight and stayed slow for hours. The slowness came from a specific search query that had started choosing a bad, expensive plan.
@@ -44,13 +44,13 @@ We added **two indexes** to give the affected queries a faster path:
 | `ix_entity_type_secondary_id_type` | `Entity` | The main search filter (entity type) |
 | `ix_IsLatestStatus_SourceStatus` | `EntityStatusHistory` | The "latest status" check inside the same query |
 
-Both tables were ~8.8–8.9 million rows — small enough that each index built in a few minutes. We ran the change during an approved deployment window, added the indexes one at a time, and verified them. The exact SQL is in **`index-deployment-case-study.sql`**.
+Both tables were ~10 million rows — small enough that each index built in a few minutes. We ran the change during an approved deployment window, added the indexes one at a time, and verified them. The exact SQL is in **`index-deployment-case-study.sql`**.
 
 ---
 
-# Part B — Why this happened, and is it fixed?
+# Part B - Why this happened? And is it fixed?
 
-**The indexes are not the whole fix.** They treat a symptom. Here's the fuller picture, so nobody inherits this thinking "slow query → add index → done."
+**The indexes are not the whole fix.** They treat a symptom.
 
 ### What actually caused the slowdown
 The real trigger was a **code deployment** that added a new filter column to the search query. That changed the query enough that the database recompiled it and it landed on a **bad plan through parameter sniffing** (it guessed a strategy based on unrepresentative sample values and then reused it). The slow plans ran roughly 8–13x slower than the normal case.
@@ -58,19 +58,11 @@ The real trigger was a **code deployment** that added a new filter column to the
 It recovered on its own some hours later when the database happened to recompile the query again and, that time, landed on a good plan.
 
 ### So the index alone doesn't remove the risk
-Because the root cause is **parameter sniffing**, the same query could pick a bad plan again after any future recompile. An index gives the database a *better option*, but it doesn't stop it from occasionally *choosing badly*. Removing that risk needs a **plan-stability step** — pinning a known-good plan or forcing a recompile via Query Store hints. **This had not been done as of the last check.** It's a DBA task and the actual root-cause fix.
-
-### And there's a second blocker on the Entity index specifically
-The filter column is stored as **varchar** (plain text), but the application (an ORM layer — EF Core in this case) sends the value as **Unicode**. That mismatch forces the database to convert every row before it can compare — and that conversion **stops it from using the new index efficiently**. Until an engineer aligns the types (an application-side change), that index can't do its job. This was predicted during the investigation, and section D confirms it came true.
-
-### The three outstanding items (none are "just add an index")
-1. **Application-side:** fix the varchar/Unicode type mismatch so the `Entity` index becomes usable.
-2. **DBA-side:** add plan stability (Query Store hint / plan forcing) to stop the parameter-sniffing recurrence.
-3. **Verify column order:** confirm which filter column should lead the index, since one candidate was heavily skewed toward a single value.
+Because the root cause is **parameter sniffing**, the same query could pick a bad plan again after any future recompile. An index gives the database a *better option*, but it doesn't stop it from occasionally *choosing badly*. Removing that risk needs a **plan-stability step** — pinning a known-good plan or forcing a recompile via Query Store hints.
 
 ---
 
-# Part C — How to do this again on another database
+# Part C - How to do this again on another database?
 
 Use this if a database gets slow and someone has identified an index as the fix. Follow the steps in order.
 
@@ -99,7 +91,7 @@ Use this if a database gets slow and someone has identified an index as the fix.
 
 ---
 
-# Part D — The outcome
+# Part D - The outcome
 
 We ran the "is it being used?" check (Step 5) some weeks after deployment. The result was **split** — one index working, one not:
 
@@ -110,4 +102,4 @@ We ran the "is it being used?" check (Step 5) some weeks after deployment. The r
 
 ### How to read this
 - **`ix_IsLatestStatus_SourceStatus` — working.** Its read counters (seeks + scans) are climbing and it was used the same day it was checked. Doing its job.
-- **`ix_entity_type_secondary_id_type` — not working.** All read counters are `0` and it has **never** been used (last-used is NULL). The only non-zero number was `user_updates`, in the low hundred-thousands — the cost of keeping the index up to date every time the table changes, with no offsetting read benefit. This matches the varchar/Unicode mismatch predicted in Part B: the index exists and is well-formed, but the application's query shape never lets the optimizer choose it.
+- **`ix_entity_type_secondary_id_type` — not working.** All read counters are `0` and it has **never** been used (last-used is NULL). The only non-zero number was `user_updates`, in the low hundred-thousands — the cost of keeping the index up to date every time the table changes, with no offsetting read benefit.

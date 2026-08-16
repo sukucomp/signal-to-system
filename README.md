@@ -53,6 +53,7 @@ signal-to-system/
 | 9 | Who Owns the 'Air'? | [`https://www.linkedin.com/...`](https://www.linkedin.com/pulse/signal-system-9-who-owns-air-suresh-balasubramaniam-q0iqc/) | (no code) |
 | 10 | The Loop Closes: From Queue to Cloud Table | [`https://www.linkedin.com/...`](https://www.linkedin.com/pulse/signal-system-10-loop-closes-suresh-balasubramaniam-jwhvc/) | [`05-rfid-to-azure-table-storage/`](./rfid-to-azure-table-storage) |
 | 11 | RF Polarization | [`https://www.linkedin.com/...`](https://www.linkedin.com/pulse/signal-system-11-rf-polarization-suresh-balasubramaniam-1lh3c/) | (no code) |
+| 12 | The decibel & the dipole | [`https://www.linkedin.com/...`](https://www.linkedin.com/pulse/signal-system-12-decibel-dipole-what-simulator-made-balasubramaniam-zlssc/) | (no code) |
 
 
 ## About

@@ -6,7 +6,7 @@ A. a record of a real fix applied to a production database,
 
 B. a plain guide to doing the same kind of fix safely, and
 
-C. an honest follow-up check some weeks later showing **only half of this fix is actually working**, with the other half waiting on an application-side change. Read section D.
+C. follow-up check some weeks later showing **only half of this fix is actually working**, with the other half waiting on an application-side change. Read section D.
 
 ---
 
@@ -27,7 +27,7 @@ Adding an index is a low-risk change (it adds a shortcut, it doesn't touch your 
 - **Query** — a request for data. A slow query is what we're trying to fix.
 - **Locked / blocking** — while an index builds, the table is frozen to everyone else for those few minutes.
 - **Query plan** — the database's chosen strategy for running a query. The same query can get a fast plan or a slow plan.
-- **Parameter sniffing** — the database picks a plan based on the first set of values it sees, then reuses it even when it's wrong for later values. A common cause of "it was fine, then suddenly slow."
+- **Parameter sniffing** — the database picks a plan based on the first set of values it sees, then reuses it even when it's wrong for later values.
 
 ---
 

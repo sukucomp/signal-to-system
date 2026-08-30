@@ -10,7 +10,7 @@ This project shows flow as below:
 ## Files
 
 - `rfid-valid-uid-to-python.ino`
-  Arduino sketch for RFID validation, on-device feedback, and serial event output.
+  Arduino sketch for RFID validation, on-device feedback, and serial event output. Arduino IDE software can be downloaded [here](https://www.arduino.cc/en/software/).
 - `rfid_serial_ingestor.py`
   Python serial listener that reads `EVENT:{...}` messages and prints parsed output.
 - `program.cs`

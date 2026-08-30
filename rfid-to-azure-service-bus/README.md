@@ -71,7 +71,7 @@ The variable is per-PowerShell-session. Reopen a window, set it again.
 
 ```powershell
 python -m pip install -r requirements.txt   # pyserial, azure-servicebus
-python -u rfid_serial_ingestor.py --port COM3 --baud 9600
+python -u rfid-serial-ingestor-az-service-bus.py --port COM3 --baud 9600
 ```
 
 Useful flags:

@@ -5,8 +5,7 @@ queue in the previous stage are now consumed by an Azure Function and
 written as rows in Azure Table Storage — so a card tap finally *arrives*
 somewhere visible in the cloud, end to end.
 
-> Companion post: **Signal to System #10 — The Loop Closes**
-> *(https://www.linkedin.com/pulse/signal-system-10-loop-closes-suresh-balasubramaniam-jwhvc/)*
+> Companion post: **[Signal to System #10 — The Loop Closes](https://www.linkedin.com/pulse/signal-system-10-loop-closes-suresh-balasubramaniam-jwhvc/)**
 
 ## What this folder adds over the previous stage
 

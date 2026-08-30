@@ -12,7 +12,7 @@ This project shows flow as below:
 - `rfid-valid-uid-to-python.ino`
   Arduino sketch for RFID validation, on-device feedback, and serial event output. Arduino IDE software can be downloaded [here](https://www.arduino.cc/en/software/).
 - `rfid_serial_ingestor.py`
-  Python serial listener that reads `EVENT:{...}` messages and prints parsed output.
+  Python serial listener that reads `EVENT:{...}` messages and prints parsed output. I am using Visual Studion Code (VSC) which can be downloaded from [here](https://code.visualstudio.com/).
 - `program.cs`
   C# console application that listens to the serial port, parses events, and prints output.
 

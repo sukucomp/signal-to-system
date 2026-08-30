@@ -14,8 +14,9 @@ device-generated `event_id` as the Service Bus `MessageId`.
 | `rfid-serial-ingestor-az-service-bus.py` | Python ingestor that reads serial events and publishes to Service Bus |
 | `rfid-serial-ingestor-az-service-bus.cs` | C# ingestor doing the same, in mirror-image structure |
 | `RfidReader.csproj` | C# project file (referenced packages: `Azure.Messaging.ServiceBus`, `System.IO.Ports`) |
-| `SCHEMA-RFID-TO-AZURE-SERVICE-BUS.md` | The event contract |
-| `README-RFID-TO-AZURE-SERVICE-BUS.md` | This file |
+| `SCHEMA.md` | The event contract |
+| `az-service-bus-dedup-test.py` | One-off script that sends the same `MessageId` five times, to verify Service Bus duplicate detection is actually firing |
+| `README.md` | This file |
 
 The Arduino sketch is identical to the one from `rfid-to-windows-serial-port/`.
 Each folder is meant to be self-sufficient,
@@ -118,10 +119,15 @@ in the queue, each with a *different* `event_id` — because each tap is
 a real, distinct event.
 
 To verify duplicate detection is actually firing, send the *same MessageId*
-deliberately (a small one-off script can do this — supply the same UUID for
-five sends in a row). Service Bus will collapse them into one message.
+deliberately — supply the same UUID for five sends in a row. Service Bus
+will collapse them into one message. The included `az-service-bus-dedup-test.py`
+does exactly this:
 
+```powershell
+python az-service-bus-dedup-test.py
 ```
+
+```python
 import os, json, uuid
 from azure.servicebus import ServiceBusClient, ServiceBusMessage
 
@@ -136,6 +142,9 @@ with ServiceBusClient.from_connection_string(cs) as client:
             sender.send_messages(msg)
             print(f"Sent attempt {i} with id={fixed_id}")
 ```
+
+Requires the same `SERVICEBUS_CONNECTION_STRING` environment variable and
+`azure-servicebus` package as the main ingestor.
 
 The same `event_id` field plays two roles: a unique key per real-world
 tap, and a deduplication key against infrastructure retries. Either

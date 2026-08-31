@@ -1,0 +1,34 @@
+# --- Build stage: install dependencies into an isolated prefix ---
+FROM python:3.12-slim AS build
+
+WORKDIR /app
+
+COPY requirements.txt .
+# --target keeps installed packages separate from system site-packages,
+# so the runtime stage can copy just this directory across.
+RUN pip install --no-cache-dir --target=/app/deps -r requirements.txt
+
+
+# --- Runtime stage: minimal image, no build tooling, non-root user ---
+FROM python:3.12-slim AS runtime
+
+# Create an unprivileged user to run the worker as.
+RUN groupadd --system app && useradd --system --gid app --no-create-home app
+
+WORKDIR /app
+
+# Bring in installed dependencies and application code only —
+# no compilers, no pip cache, no build-time artifacts.
+COPY --from=build /app/deps /app/deps
+COPY worker.py config.py ./
+
+ENV PYTHONPATH=/app/deps \
+    PYTHONUNBUFFERED=1
+
+USER app
+
+# Required at runtime (no defaults — set these on the Container App /
+# docker run --env-file): SERVICEBUS_CONNECTION_STR, TABLE_CONNECTION_STR
+# Optional: QUEUE_NAME, TABLE_NAME (see config.py for defaults)
+
+CMD ["python", "worker.py"]
